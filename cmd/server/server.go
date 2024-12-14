@@ -21,6 +21,8 @@ func main() {
 	}
 	defer db.Close()
 
+	createTableIfNotExists(db)
+
 	http.HandleFunc("/cotacao", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Accept", "application/json")
 
@@ -39,6 +41,18 @@ func main() {
 		json.NewEncoder(w).Encode(e)
 	})
 	http.ListenAndServe(":8080", nil)
+}
+
+func createTableIfNotExists(db *sql.DB) {
+	query := `
+    	CREATE TABLE IF NOT EXISTS exchange_rates (
+        	id string PRIMARY KEY,
+        	value string NOT NULL
+    	)`
+	_, err := db.Exec(query)
+	if err != nil {
+		log.Fatalf("Failed to create table: %v", err)
+	}
 }
 
 func getExchangeRate() (string, error) {
