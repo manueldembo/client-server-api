@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -25,14 +26,14 @@ func main() {
 
 		e, err := getExchangeRate()
 		if err != nil {
+			fmt.Printf("Error: %s\n", err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		err = saveExchangeRate(db, e)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			fmt.Printf("Error: %s\n", err.Error())
 		}
 
 		json.NewEncoder(w).Encode(e)
